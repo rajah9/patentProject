@@ -149,6 +149,13 @@ public class Patent {
     }
 
     /**
+     * Make the abstract just a handful of stem words that will not be regarded in the word cloud.
+     */
+    public void disregardAbstract() {
+        patentAbstract = "the of and it";
+    }
+
+    /**
      * Convert to a string of field names, separated by the default delimiter.
      *
      * @return csv row, separated by default delimiter.

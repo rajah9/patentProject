@@ -58,16 +58,18 @@ public final class PatentXMLMapReduce {
                     }
                 }
                 reader.close();
-                if (CompanyFilter.isTarget(patent.getCompanyName())) {
-                    Long patentId;
-                    log.debug("About to write patent number <" + patent.getPatentNumber() + "> with <" + patent.toCsvRow() + ">.");
-                    try {
-                        patentId = Long.parseLong(patent.getPatentNumber());
-                    } catch (NumberFormatException e) {
-                        patentId = (new Date()).getTime();
-                    }
-                    context.write(patentId, patent.toCsvRow());
+                if (!CompanyFilter.isTarget(patent.getCompanyName())) {
+                    patent.disregardAbstract();
                 }
+                Long patentId;
+                log.debug("About to write patent number <" + patent.getPatentNumber() + "> with <" + patent.toCsvRow() + ">.");
+                try {
+                    patentId = Long.parseLong(patent.getPatentNumber());
+                } catch (NumberFormatException e) {
+                    patentId = (new Date()).getTime();
+                }
+                context.write(patentId, patent.toCsvRow());
+
             } catch (Exception e) {
                 log.error("Error processing '" + document + "'", e);
             }

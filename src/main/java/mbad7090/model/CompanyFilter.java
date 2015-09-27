@@ -9,10 +9,10 @@ import java.util.ArrayList;
  */
 public class CompanyFilter {
     // Following stems must be all uppercase.
-    static final private String _OURSTEM =   "3M INNOVAT"; // allows for 3M Innovative or 3M Innovation
-    static final private String _THEIRSTEM = "HONEYWELL"; // allows for subsidiaries, such as HONEYWELL FEDERAL MANUFACTURING TECHNOLOGIES, LLC
+    static final private String _OURSTEM1 = "3M INNOVATIVE"; // allows for 3M Innovative as a stem
+    static final private String _OURSTEM2 = "3M INNOVATION"; // allows for 3M Innovation
 
-    static private String[] matchingCompanies = { _OURSTEM, _THEIRSTEM };
+    static private String[] matchingCompanies = { _OURSTEM1, _OURSTEM2 };
     /**
      * Determine whether this company is one of the target companies.
      * @param companyToTest     String of company to test, like "HONEYWELL INTERNATIONAL INC."
@@ -22,6 +22,6 @@ public class CompanyFilter {
         if (StringUtils.isBlank(companyToTest)) { return false; }
         String allCaps = StringUtils.upperCase(companyToTest).trim();
 
-        return StringUtils.startsWithAny(companyToTest, matchingCompanies);
+        return StringUtils.startsWithAny(allCaps, matchingCompanies);
     }
 }
