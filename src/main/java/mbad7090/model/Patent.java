@@ -119,10 +119,10 @@ public class Patent {
         } else if (currentElement.equalsIgnoreCase("invention-title")) {
             patentTitle += value;
             log.debug("Made patent title " + patentTitle);
-/*   Handling Abstract (and its embedded tags) in its own method.
+//   Handling Abstract (and its embedded tags) in its own method.
         } else if (currentElement.equalsIgnoreCase("abstract")) {
             patentAbstract += value;
-            log.debug("Made patent abstract " + patentAbstract);*/
+            log.debug("Made patent abstract " + patentAbstract);
         } else if (currentElement.equalsIgnoreCase("document-id")) {
             isInDocumentId = true;
             log.debug("Inside document id.");

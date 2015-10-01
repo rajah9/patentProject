@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by Rajah on 9/23/2015.
  */
@@ -265,7 +263,6 @@ public class PatentXMLMapReduceTest {
     }
 
 //    @Test
-
         @Ignore
     public void testRunJob() throws Exception {
         driver.withInput(new LongWritable(1L), new Text(testXml)).withOutput(new Text("foo"), new Text("bar")).runTest();
