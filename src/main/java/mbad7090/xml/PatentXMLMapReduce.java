@@ -23,16 +23,28 @@ import java.util.Date;
 
 public final class PatentXMLMapReduce extends XMLMapReduce {
 
+    /**
+     * Inner class Map
+     */
     public static class Map extends Mapper<LongWritable, Text, Text, Text> {
 
+        /**
+         * Map the XML input to CSV output.
+         * @param key       File offset
+         * @param value     XML document
+         * @param context   Hadoop context
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         protected void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
             try {
                 Patent patent = readPatentXml(value);
-                if (!CompanyFilter.isTarget(patent.getCompanyName())) {
-                    patent.disregardAbstract();
-                }
+
+                boolean willDisregard = !CompanyFilter.isTarget(patent.getCompanyName()); // or set to false to never disregard
+                patent.cleanFields(willDisregard);
+
                 mapWrite(context, patent);
 
             } catch (Exception e) {
@@ -41,6 +53,13 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
         }
     }
 
+    /**
+     * Write the patentId and the patent as a CSV row to the context.
+     * @param context
+     * @param patent
+     * @throws IOException
+     * @throws InterruptedException
+     */
     protected static void mapWrite(Context context, Patent patent) throws IOException, InterruptedException {
         Long patentId;
         log.debug("About to write patent number <" + patent.getPatentNumber() + "> with <" + patent.toCsvRow() + ">.");
@@ -73,7 +92,6 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.waitForCompletion(true);
-
     }
 
     public static void main(String... args) throws Exception {

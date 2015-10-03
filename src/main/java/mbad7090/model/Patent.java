@@ -18,6 +18,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
  */
 public class Patent {
     private static final Logger log = LoggerFactory.getLogger(Patent.class);
+    public static final String[] REMOVELIST = {"\n", "\t"};
+    public static final String[] REPLACELIST = {" ", " "};
     private char delim = '\t';
     private String companyName = "";
     private String assignee = "";
@@ -51,7 +53,7 @@ public class Patent {
     }
 
     public String getPatentClass() {
-        return StringUtils.trim(patentClass);
+        return patentClass;
     }
 
     public String getAssignee() {
@@ -70,9 +72,7 @@ public class Patent {
         return patentTitle;
     }
 
-    public String getPatentAbstract() {
-        return StringUtils.replace(patentAbstract, "\n", " ").trim();
-    }
+    public String getPatentAbstract() { return patentAbstract; }
 
     /**
      * If appropriate, add the field to the Patent.
@@ -146,6 +146,28 @@ public class Patent {
             isInApplicationReference = false;
             log.debug("Exiting application reference.");
         }
+    }
+
+    /**
+     * Clean the fields of embedded tabs and linefeeds. If willDisregardAbstract
+     * is true, make the patentAbstract into a small handful of stem words.
+     *
+     * @param willDisregardAbstract if true, call disregardAbstract.
+     */
+    public void cleanFields(boolean willDisregardAbstract) {
+        companyName = cleanAndTrim(companyName);
+        assignee = cleanAndTrim(assignee);
+        patentClass = cleanAndTrim(patentClass);
+        patentTitle = cleanAndTrim(patentTitle);
+        if (willDisregardAbstract) {
+            disregardAbstract();
+        } else {
+            patentAbstract = cleanAndTrim(patentAbstract);
+        }
+    }
+
+    private String cleanAndTrim(String cleanMe) {
+        return StringUtils.replaceEachRepeatedly(cleanMe, REMOVELIST, REPLACELIST).trim();
     }
 
     /**

@@ -11,8 +11,9 @@ public class CompanyFilter {
     // Following stems must be all uppercase.
     static final private String _OURSTEM1 = "3M INNOVATIVE"; // allows for 3M Innovative as a stem
     static final private String _OURSTEM2 = "3M INNOVATION"; // allows for 3M Innovation
+    static final private String _OURSTEM3 = "3M INNOVATVE";  // an unfortunate misspelling that exists in the data.
 
-    static private String[] matchingCompanies = { _OURSTEM1, _OURSTEM2 };
+    static private String[] matchingCompanies = { _OURSTEM1, _OURSTEM2 , _OURSTEM3};
     /**
      * Determine whether this company is one of the target companies.
      * @param companyToTest     String of company to test, like "HONEYWELL INTERNATIONAL INC."
