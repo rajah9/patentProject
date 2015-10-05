@@ -74,6 +74,10 @@ public class Patent {
 
     public String getPatentAbstract() { return patentAbstract; }
 
+    public void setCompanyName(String companyName) { this.companyName = companyName; }
+
+    public void setYearGranted(Integer yearGranted) { this.yearGranted = yearGranted; }
+
     /**
      * If appropriate, add the field to the Patent.
      *
