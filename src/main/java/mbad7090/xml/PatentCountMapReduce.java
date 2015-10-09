@@ -85,45 +85,12 @@ public class PatentCountMapReduce extends XMLMapReduce {
             fileName = null;
         }
 
-        Text code = new Text(ownershipYearCode(patent, fileName));
+        Text code = new Text(patent.ownershipYearCode(fileName));
 
         context.write(code, one);
     }
 
-    /**
-     * Return a code based on whether it was our company or theirs and the year
-     * from XML file or Patent Year granted.
-     *
-     * @param patent    Patent
-     * @param fileName  filename, like ipa150108.xml
-     * @return          code (like "OURS2006" or "THEIRS2012")
-     */
-    protected static String ownershipYearCode(Patent patent, String fileName) {
-        String oursOrTheirs;
-        int year;
-        if (CompanyFilter.isTarget(patent.getCompanyName())) {
-            oursOrTheirs = "OURS";
-        } else {
-            oursOrTheirs = "THEIRS";
-        }
-        if (StringUtils.isEmpty(fileName)) {
-            // no file name, so use grant year.
-            year = patent.getYearGranted(); // could be 0 if never filled in
-            oursOrTheirs += "gy";
-        } else {
-            // file name is like ipa150108.xml, where the 15 is the year.
-            String yy = StringUtils.substring(fileName, 3, 5);
-            int yr;
-            try {
-                yr = Integer.parseInt(yy);
-            } catch (NumberFormatException e) {
-                yr = 0;
-            }
-            year = 2000 + yr; // makes "15" into 2015
-            oursOrTheirs += "fn";
-        }
-        return String.format("%s%d", oursOrTheirs, year);
-    }
+
 
     public static void runJob(String input, String output) throws Exception {
         Configuration conf = new Configuration();

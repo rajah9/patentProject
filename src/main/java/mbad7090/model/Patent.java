@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -25,7 +29,7 @@ public class Patent {
     private String assignee = "";
     private Integer yearGranted = null;
     private Integer yearApplied = null;
-    private String patentClass = "";
+    private Set<String> patentClass = new HashSet<String>();
     private String patentNumber = "";
     private String patentTitle = "";
     private String patentAbstract = "";
@@ -52,8 +56,12 @@ public class Patent {
         }
     }
 
+    /**
+     * Return the patent class as a list of strings.
+     * @return  String, with elements separated by commas.
+     */
     public String getPatentClass() {
-        return patentClass;
+        return StringUtils.join(patentClass.iterator(), ", ");
     }
 
     public String getAssignee() {
@@ -108,9 +116,9 @@ public class Patent {
                 isInDocumentId = false;
             }
             log.debug("made year granted: " + yearGranted);
-        } else if (currentElement.equalsIgnoreCase("main-classification")) {
-            patentClass += value + " ";
-            log.debug("Made patent class" + patentClass);
+        } else if (currentElement.equalsIgnoreCase("class")) {
+            if (StringUtils.isNotBlank(value)) { patentClass.add(value); }
+            log.debug("Patent class has " + patentClass.size() + " elements.");
         } else if (currentElement.equalsIgnoreCase("doc-number")) {
             patentNumber += value;
             log.debug("Made doc number " + patentNumber);
@@ -161,7 +169,6 @@ public class Patent {
     public void cleanFields(boolean willDisregardAbstract) {
         companyName = cleanAndTrim(companyName);
         assignee = cleanAndTrim(assignee);
-        patentClass = cleanAndTrim(patentClass);
         patentTitle = cleanAndTrim(patentTitle);
         if (willDisregardAbstract) {
             disregardAbstract();
@@ -246,5 +253,39 @@ public class Patent {
             String attrib = reader.getAttributeValue(i);
             log.debug("Got an attribute: " + attrib);
         }
+    }
+
+    /**
+     * Return a code based on whether it was our company or theirs and the year
+     * from XML file or Patent Year granted.
+     *
+     * @param fileName  filename, like ipa150108.xml
+     * @return          code (like "OURS2006" or "THEIRS2012")
+     */
+    public String ownershipYearCode(String fileName) {
+        String oursOrTheirs;
+        int year;
+        if (CompanyFilter.isTarget(getCompanyName())) {
+            oursOrTheirs = "OURS";
+        } else {
+            oursOrTheirs = "THEIRS";
+        }
+        if (StringUtils.isEmpty(fileName)) {
+            // no file name, so use grant year.
+            year = getYearGranted(); // could be 0 if never filled in
+            oursOrTheirs += " gy ";
+        } else {
+            // file name is like ipa150108.xml, where the 15 is the year.
+            String yy = StringUtils.substring(fileName, 3, 5);
+            int yr;
+            try {
+                yr = Integer.parseInt(yy);
+            } catch (NumberFormatException e) {
+                yr = 0;
+            }
+            year = 2000 + yr; // makes "15" into 2015
+            oursOrTheirs += " fn ";
+        }
+        return String.format("%s%d", oursOrTheirs, year);
     }
 }

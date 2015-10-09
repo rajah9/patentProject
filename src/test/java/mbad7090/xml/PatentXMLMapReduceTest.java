@@ -6,6 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Created by Rajah on 9/23/2015.
@@ -21,7 +22,7 @@ public class PatentXMLMapReduceTest {
         driver = new MapDriver<LongWritable, Text, Text, Text>(mapper);
     }
 
-    //    @Test
+//        @Test
     @Ignore
     public void testRunJob() throws Exception {
         driver.withInput(new LongWritable(1L), new Text(TestXml.testXml)).withOutput(new Text("foo"), new Text("bar")).runTest();
