@@ -36,7 +36,7 @@ public class TestXml {
             "<subgroup>02</subgroup>\n" +
             "<symbol-position>F</symbol-position>\n" +
             "<classification-value>I</classification-value>\n" +
-            "<action-date><date>20101111</date></action-date>\n" +
+            "<action-date><date>20101208</date></action-date>\n" +
             "<generating-office><country>US</country></generating-office>\n" +
             "<classification-status>B</classification-status>\n" +
             "<classification-data-source>H</classification-data-source>\n" +

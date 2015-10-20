@@ -6,14 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
  * Patent handles the desired patent fields.
@@ -29,7 +25,10 @@ public class Patent {
     private String assignee = "";
     private Integer yearGranted = null;
     private Integer yearApplied = null;
+    private String dateGranted = null;
+    private String dateApplied = null;
     private Set<String> patentClass = new HashSet<String>();
+    private String mainClassification = "";
     private String patentNumber = "";
     private String patentTitle = "";
     private String patentAbstract = "";
@@ -53,6 +52,24 @@ public class Patent {
             return yearApplied;
         } else {
             return 0;
+        }
+    }
+
+
+    public String getDateGranted() {
+        if (dateGranted != null) {
+            return dateGranted;
+        } else {
+            return "";
+        }
+
+    }
+
+    public String getDateApplied() {
+        if (dateApplied != null) {
+            return dateApplied;
+        } else {
+            return "";
         }
     }
 
@@ -86,6 +103,10 @@ public class Patent {
 
     public void setYearGranted(Integer yearGranted) { this.yearGranted = yearGranted; }
 
+    public String getMainClassification() {
+        return mainClassification;
+    }
+
     /**
      * If appropriate, add the field to the Patent.
      *
@@ -100,34 +121,46 @@ public class Patent {
             log.debug("Made companyName: " + value);
         } else if (currentElement.equalsIgnoreCase("date")) {
             // Figure out whether this is year granted or year applied. Must look at surrounding tags.
-            Integer year;
-            try {
-                year = yyyyMMddToYear(value);
-            } catch (NumberFormatException e) {
-                log.error("Unable to find the year in the first 4 digits of <" + value + ">.");
-                year = null;
+//            Integer year;
+            if (StringUtils.isNotBlank(value)) {
+                String dt = StringUtils.substring(value, 0,4) + "-" + StringUtils.substring(value, 4,6) + "-" + StringUtils.substring(value, 6,8);
+
+                if (isInApplicationReference) {
+                    dateApplied = dt;
+                    yearApplied = Integer.valueOf(value.substring(0,4));
+                    isInApplicationReference = false;
+                }
+                if (isInDocumentId) {
+                    dateGranted = dt;
+                    yearGranted = Integer.valueOf(value.substring(0,4));
+                    isInDocumentId = false;
+                }
+                log.debug("made year granted: " + yearGranted);
             }
-            if (isInApplicationReference) {
-                yearApplied = year;
-                isInApplicationReference = false;
-            }
-            if (isInDocumentId) {
-                yearGranted = year;
-                isInDocumentId = false;
-            }
-            log.debug("made year granted: " + yearGranted);
+
         } else if (currentElement.equalsIgnoreCase("class")) {
-            if (StringUtils.isNotBlank(value)) { patentClass.add(value); }
+            if (StringUtils.isNotBlank(value)) {
+                patentClass.add(value);
+            }
             log.debug("Patent class has " + patentClass.size() + " elements.");
+        } else if (currentElement.equalsIgnoreCase("main-classification")) {
+            if (StringUtils.isNotBlank(value)) {
+                mainClassification += StringUtils.trim(value) + " ";
+            }
+            log.debug("Main classification is " + mainClassification);
         } else if (currentElement.equalsIgnoreCase("doc-number")) {
             patentNumber += value;
             log.debug("Made doc number " + patentNumber);
         } else if (currentElement.equalsIgnoreCase("last-name")) {
-            assignee += value + " ";
-            log.debug("Made assignee " + assignee);
+            if (StringUtils.isNotBlank(value)) {
+                assignee += value + "@";
+                log.debug("Made assignee " + assignee);
+            }
         } else if (currentElement.equalsIgnoreCase("first-name")) {
-            assignee += value + " ";
-            log.debug("Made assignee " + assignee);
+            if (StringUtils.isNotBlank(value)) {
+                assignee += value + "|";
+                log.debug("Made assignee " + assignee);
+            }
         } else if (currentElement.equalsIgnoreCase("invention-title")) {
             patentTitle += value;
             log.debug("Made patent title " + patentTitle);
@@ -170,6 +203,7 @@ public class Patent {
         companyName = cleanAndTrim(companyName);
         assignee = cleanAndTrim(assignee);
         patentTitle = cleanAndTrim(patentTitle);
+        mainClassification = cleanAndTrim(mainClassification);
         if (willDisregardAbstract) {
             disregardAbstract();
         } else {
@@ -196,12 +230,21 @@ public class Patent {
     public String toCsvRow() {
         StringBuffer sb = new StringBuffer();
         sb.append(getCompanyName()).append(delim);
-        sb.append(getAssignee()).append(delim);
+        sb.append('"').append(getAssignee()).append('"').append(delim); // surround by quotes so the commas won't become columns
         sb.append(getYearGranted()).append(delim);
         sb.append(getYearApplied()).append(delim);
         sb.append(getPatentClass()).append(delim);
+        sb.append(getMainClassification()).append(delim);
         sb.append(getPatentTitle()).append(delim);
         sb.append(getPatentAbstract()).append(delim);
+        return sb.toString();
+    }
+
+    public String toCsvDate() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getCompanyName()).append(delim);
+        sb.append(getDateGranted()).append(delim);
+        sb.append(getPatentClass()).append(delim);
         return sb.toString();
     }
 

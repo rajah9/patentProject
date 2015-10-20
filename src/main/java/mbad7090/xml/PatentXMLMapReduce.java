@@ -45,7 +45,9 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
                 boolean willDisregard = !CompanyFilter.isTarget(patent.getCompanyName()); // or set to false to never disregard
                 patent.cleanFields(willDisregard);
 
-                mapWrite(context, patent);
+ //               if (!willDisregard)
+                    mapWrite(context, patent);
+
 
             } catch (Exception e) {
                 log.error("Error processing document:" +  e.toString());
@@ -69,6 +71,7 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
             patentId = (new Date()).getTime();
         }
         context.write(patentId, patent.toCsvRow());
+//        context.write(patentId, patent.toCsvDate());
     }
 
     public static void runJob(String input, String output) throws Exception {
