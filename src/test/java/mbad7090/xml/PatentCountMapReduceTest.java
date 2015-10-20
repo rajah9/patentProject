@@ -1,6 +1,6 @@
 package mbad7090.xml;
 
-import mbad7090.model.Patent;
+import mbad7090.model.PatentAbstract;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -34,7 +34,7 @@ public class PatentCountMapReduceTest {
 
     @Test(dataProvider="ownershipYear")
     public void testOwnershipYearCode(String company, String fileName, int year, String expected) throws Exception {
-        Patent patent = new Patent();
+        PatentAbstract patent = new PatentAbstract();
         patent.setCompanyName(company);
         patent.setYearGranted(year);
         assertEquals(patent.ownershipYearCode(fileName), expected);

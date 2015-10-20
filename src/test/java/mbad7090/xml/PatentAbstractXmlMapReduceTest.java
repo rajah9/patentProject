@@ -6,19 +6,18 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  * Created by Rajah on 9/23/2015.
  */
-public class PatentXMLMapReduceTest {
+public class PatentAbstractXmlMapReduceTest {
 
     private Mapper<LongWritable, Text, Text, Text> mapper;
     private MapDriver<LongWritable, Text, Text, Text> driver;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new PatentXMLMapReduce.Map();
+        mapper = new PatentAbstractXmlMapReduce.Map();
         driver = new MapDriver<LongWritable, Text, Text, Text>(mapper);
     }
 

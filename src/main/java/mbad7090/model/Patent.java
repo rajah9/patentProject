@@ -16,11 +16,12 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * It has a separate way to handle the abstract tag.
  * Created by Rajah on 9/22/2015.
  */
-public class Patent {
-    private static final Logger log = LoggerFactory.getLogger(Patent.class);
+abstract class Patent {
+    protected static final Logger log = LoggerFactory.getLogger(Patent.class);
     public static final String[] REMOVELIST = {"\n", "\t"};
     public static final String[] REPLACELIST = {" ", " "};
-    private char delim = '\t';
+    private static final boolean USEYEARS = false;
+    protected char delim = '\t';
     private String companyName = "";
     private String assignee = "";
     private Integer yearGranted = null;
@@ -31,9 +32,9 @@ public class Patent {
     private String mainClassification = "";
     private String patentNumber = "";
     private String patentTitle = "";
-    private String patentAbstract = "";
     private boolean isInDocumentId = false;
     private boolean isInApplicationReference = false;
+
 
     public String getCompanyName() {
         return companyName;
@@ -96,8 +97,6 @@ public class Patent {
     public String getPatentTitle() {
         return patentTitle;
     }
-
-    public String getPatentAbstract() { return patentAbstract; }
 
     public void setCompanyName(String companyName) { this.companyName = companyName; }
 
@@ -164,10 +163,6 @@ public class Patent {
         } else if (currentElement.equalsIgnoreCase("invention-title")) {
             patentTitle += value;
             log.debug("Made patent title " + patentTitle);
-//   Handling Abstract (and its embedded tags) in its own method.
-        } else if (currentElement.equalsIgnoreCase("abstract")) {
-            patentAbstract += value;
-            log.debug("Made patent abstract " + patentAbstract);
         } else if (currentElement.equalsIgnoreCase("document-id")) {
             isInDocumentId = true;
             log.debug("Inside document id.");
@@ -194,32 +189,18 @@ public class Patent {
     }
 
     /**
-     * Clean the fields of embedded tabs and linefeeds. If willDisregardAbstract
-     * is true, make the patentAbstract into a small handful of stem words.
+     * Clean the fields of embedded tabs and linefeeds.
      *
-     * @param willDisregardAbstract if true, call disregardAbstract.
      */
-    public void cleanFields(boolean willDisregardAbstract) {
+    public void cleanFields() {
         companyName = cleanAndTrim(companyName);
         assignee = cleanAndTrim(assignee);
         patentTitle = cleanAndTrim(patentTitle);
         mainClassification = cleanAndTrim(mainClassification);
-        if (willDisregardAbstract) {
-            disregardAbstract();
-        } else {
-            patentAbstract = cleanAndTrim(patentAbstract);
-        }
     }
 
-    private String cleanAndTrim(String cleanMe) {
+    protected String cleanAndTrim(String cleanMe) {
         return StringUtils.replaceEachRepeatedly(cleanMe, REMOVELIST, REPLACELIST).trim();
-    }
-
-    /**
-     * Make the abstract just a handful of stem words that will not be regarded in the word cloud.
-     */
-    public void disregardAbstract() {
-        patentAbstract = "the of and it";
     }
 
     /**
@@ -231,12 +212,17 @@ public class Patent {
         StringBuffer sb = new StringBuffer();
         sb.append(getCompanyName()).append(delim);
         sb.append('"').append(getAssignee()).append('"').append(delim); // surround by quotes so the commas won't become columns
-        sb.append(getYearGranted()).append(delim);
-        sb.append(getYearApplied()).append(delim);
+        if (USEYEARS) {
+            sb.append(getYearGranted()).append(delim);
+            sb.append(getYearApplied()).append(delim);
+        }
+        else {
+            sb.append(getDateGranted()).append(delim);
+            sb.append(getDateApplied()).append(delim);
+        }
         sb.append(getPatentClass()).append(delim);
         sb.append(getMainClassification()).append(delim);
         sb.append(getPatentTitle()).append(delim);
-        sb.append(getPatentAbstract()).append(delim);
         return sb.toString();
     }
 
@@ -260,38 +246,7 @@ public class Patent {
         return Integer.parseInt(value.substring(0, 4));
     }
 
-    /**
-     * Need special processing for the abstract tag, which will have one or more
-     * tags (such as p and b) embedded.
-     *
-     * @param reader Continue reading from this stream until the ending abstract tag.
-     */
-    public void addAbstract(XMLStreamReader reader) throws XMLStreamException {
-        getAttribs(reader);
-        String currentElement;
-
-        while (reader.hasNext()) {
-            int code = reader.next();
-            switch (code) {
-                case START_ELEMENT:
-                    currentElement = reader.getLocalName();
-                    if (currentElement.equalsIgnoreCase("p")) { getAttribs(reader); }
-//                    if (currentElement.equalsIgnoreCase("b")) {  }
-                    break;
-                case CHARACTERS:
-                    patentAbstract += reader.getText();
-                    log.debug("Abstract is now: " + getPatentAbstract());
-                    break;
-                case END_ELEMENT:
-                    currentElement = reader.getLocalName();
-                    if (currentElement.equalsIgnoreCase("abstract")) {
-                        return;
-                    }
-            }
-        }
-    }
-
-    private void getAttribs(XMLStreamReader reader) {
+    protected void getAttribs(XMLStreamReader reader) {
         for (int i = 0; i < reader.getAttributeCount(); i++) {
             String attrib = reader.getAttributeValue(i);
             log.debug("Got an attribute: " + attrib);

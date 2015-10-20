@@ -1,13 +1,7 @@
 package mbad7090.xml;
 
-import mbad7090.model.Patent;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
+import mbad7090.model.PatentAbstract;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +19,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
  * Created by Rajah on 10/1/2015.
  */
 abstract class XMLMapReduce {
-    protected static final Logger log = LoggerFactory.getLogger(PatentXMLMapReduce.class);
+    protected static final Logger log = LoggerFactory.getLogger(PatentAbstractXmlMapReduce.class);
 
     /**
      * Read through the given XML and fill in the fields in Patent.
@@ -33,13 +27,13 @@ abstract class XMLMapReduce {
      * @return                      patent object
      * @throws XMLStreamException
      */
-    protected static Patent readPatentXml(Text value) throws XMLStreamException {
+    protected static PatentAbstract readPatentXml(Text value) throws XMLStreamException {
         String document = value.toString();
         // System.out.println("'" + document + "'");
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance()
                     .createXMLStreamReader(new ByteArrayInputStream(document.getBytes()));
-            Patent patent = new Patent();
+            PatentAbstract patent = new PatentAbstract();
             String currentElement = "";
             while (reader.hasNext()) {
                 int code = reader.next();
@@ -75,7 +69,7 @@ abstract class XMLMapReduce {
      * @param parentElement Parent element, such as "abstract."
      * @throws XMLStreamException
      */
-    protected static void addNested(XMLStreamReader reader, String parentElement, Patent patent) throws XMLStreamException {
+    protected static void addNested(XMLStreamReader reader, String parentElement, PatentAbstract patent) throws XMLStreamException {
         getAttribs(reader);
         String currentElement;
         StringBuffer value = new StringBuffer();

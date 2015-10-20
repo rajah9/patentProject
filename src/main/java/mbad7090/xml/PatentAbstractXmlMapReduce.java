@@ -6,7 +6,7 @@ package mbad7090.xml;
  */
 
 import mbad7090.model.CompanyFilter;
-import mbad7090.model.Patent;
+import mbad7090.model.PatentAbstract;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -21,7 +21,7 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import java.io.IOException;
 import java.util.Date;
 
-public final class PatentXMLMapReduce extends XMLMapReduce {
+public final class PatentAbstractXmlMapReduce extends XMLMapReduce {
 
     /**
      * Inner class Map
@@ -40,7 +40,7 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
         protected void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
             try {
-                Patent patent = readPatentXml(value);
+                PatentAbstract patent = readPatentXml(value);
 
                 boolean willDisregard = !CompanyFilter.isTarget(patent.getCompanyName()); // or set to false to never disregard
                 patent.cleanFields(willDisregard);
@@ -57,12 +57,12 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
 
     /**
      * Write the patentId and the patent as a CSV row to the context.
-     * @param context
-     * @param patent
+     * @param context       Hadoop context
+     * @param patent        Patent object
      * @throws IOException
      * @throws InterruptedException
      */
-    protected static void mapWrite(Context context, Patent patent) throws IOException, InterruptedException {
+    protected static void mapWrite(Context context, PatentAbstract patent) throws IOException, InterruptedException {
         Long patentId;
         log.debug("About to write patent number <" + patent.getPatentNumber() + "> with <" + patent.toCsvRow() + ">.");
         try {
@@ -81,7 +81,7 @@ public final class PatentXMLMapReduce extends XMLMapReduce {
         conf.set("xmlinput.end", "</us-patent-application>");
 
         Job job = new Job(conf);
-        job.setJarByClass(PatentXMLMapReduce.class);
+        job.setJarByClass(PatentAbstractXmlMapReduce.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setMapperClass(Map.class);

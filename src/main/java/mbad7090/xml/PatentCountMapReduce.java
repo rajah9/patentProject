@@ -1,7 +1,7 @@
 package mbad7090.xml;
 
 import mbad7090.model.CompanyFilter;
-import mbad7090.model.Patent;
+import mbad7090.model.PatentAbstract;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -43,7 +43,7 @@ public class PatentCountMapReduce extends XMLMapReduce {
         protected void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
             try {
-                Patent patent = readPatentXml(value);
+                PatentAbstract patent = readPatentXml(value);
 
                 mapWrite(context, patent);
 
@@ -77,7 +77,7 @@ public class PatentCountMapReduce extends XMLMapReduce {
      * @throws IOException
      * @throws InterruptedException
      */
-    protected static void mapWrite(Mapper.Context context, Patent patent) throws IOException, InterruptedException {
+    protected static void mapWrite(Mapper.Context context, PatentAbstract patent) throws IOException, InterruptedException {
         String fileName;
         try {
             fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
