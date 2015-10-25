@@ -24,6 +24,6 @@ public class PatentAbstractXmlMapReduceTest {
 //        @Test
     @Ignore
     public void testRunJob() throws Exception {
-        driver.withInput(new LongWritable(1L), new Text(TestXml.testXml)).withOutput(new Text("foo"), new Text("bar")).runTest();
+        driver.withInput(new LongWritable(1L), new Text(TestXml.abstractXml)).withOutput(new Text("foo"), new Text("bar")).runTest();
     }
 }

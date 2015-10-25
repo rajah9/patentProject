@@ -5,18 +5,17 @@ package mbad7090.xml;
  * It reads Patent XML files and maps them to csv files.
  */
 
-import mbad7090.model.CompanyFilter;
-import mbad7090.model.PatentAbstract;
+import mbad7090.model.PatentGrant;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -29,7 +28,7 @@ import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
-public class PatentAbstractXmlMapReduce extends XMLMapReduce {
+public final class PatentGrantXmlMapReduce extends XMLMapReduce {
 
     /**
      * Inner class Map
@@ -48,15 +47,9 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
         protected void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
             try {
-                PatentAbstract patent = readPatentXml(value);
+                PatentGrant patent = readPatentXml(value);
 
-                boolean willDisregard = !CompanyFilter.isTarget(patent.getCompanyName()); // or set to false to never disregard
-                patent.cleanFields(willDisregard);
-
- //               if (!willDisregard)
-                    mapWrite(context, patent);
-
-
+                mapWrite(context, patent);
             } catch (Exception e) {
                 log.error("Error processing document:" +  e.toString());
             }
@@ -69,21 +62,19 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
      * @return                      patent object
      * @throws XMLStreamException
      */
-    protected static PatentAbstract readPatentXml(Text value) throws XMLStreamException {
+    protected static PatentGrant readPatentXml(Text value) throws XMLStreamException {
         String document = value.toString();
         try {
             XMLStreamReader reader = XMLInputFactory.newInstance()
                     .createXMLStreamReader(new ByteArrayInputStream(document.getBytes()));
-            PatentAbstract patent = new PatentAbstract();
+            PatentGrant patent = new PatentGrant();
             String currentElement = "";
             while (reader.hasNext()) {
                 int code = reader.next();
                 switch (code) {
                     case START_ELEMENT:
                         currentElement = reader.getLocalName();
-                        if (currentElement.equalsIgnoreCase("abstract")) {
-                            addNested(reader, currentElement, patent);
-                        }
+                        patent.startElement(currentElement);
                         break;
                     case CHARACTERS:
                         patent.addField(currentElement, reader.getText());
@@ -102,6 +93,7 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
         }
     }
 
+
     /**
      * Write the patentId and the patent as a CSV row to the context.
      * @param context       Hadoop context
@@ -109,7 +101,7 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
      * @throws IOException
      * @throws InterruptedException
      */
-    protected static void mapWrite(Context context, PatentAbstract patent) throws IOException, InterruptedException {
+    protected static void mapWrite(Context context, PatentGrant patent) throws IOException, InterruptedException {
         Long patentId;
         log.debug("About to write patent number <" + patent.getPatentNumber() + "> with <" + patent.toCsvRow() + ">.");
         try {
@@ -124,11 +116,11 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
     public static void runJob(String input, String output) throws Exception {
         Configuration conf = new Configuration();
         conf.set("key.value.separator.in.input.line", " ");
-        conf.set("xmlinput.start", "<us-patent-application");
-        conf.set("xmlinput.end", "</us-patent-application>");
+        conf.set("xmlinput.start", "<us-patent-grant");
+        conf.set("xmlinput.end", "</us-patent-grant>");
 
         Job job = new Job(conf);
-        job.setJarByClass(PatentAbstractXmlMapReduce.class);
+        job.setJarByClass(PatentGrantXmlMapReduce.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.setMapperClass(Map.class);

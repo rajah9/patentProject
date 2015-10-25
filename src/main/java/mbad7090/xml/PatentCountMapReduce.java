@@ -23,7 +23,7 @@ import java.util.Date;
  * Created by Rajah on 10/1/2015.
  * This file extends the Map and does a MapReduce on the Patent files.
  */
-public class PatentCountMapReduce extends XMLMapReduce {
+public class PatentCountMapReduce extends PatentAbstractXmlMapReduce {
     private final static IntWritable one = new IntWritable(1);
 
     /**

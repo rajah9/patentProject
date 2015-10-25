@@ -6,7 +6,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
-import org.junit.Ignore;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -29,7 +28,7 @@ public class PatentCountMapReduceTest {
     @Test
 //    @Ignore
     public void testRunJob() throws Exception {
-        driver.withInput(new LongWritable(1L), new Text(TestXml.testXml)).withOutput(new Text("THEIRS gy 2006"), new IntWritable(1)).runTest();
+        driver.withInput(new LongWritable(1L), new Text(TestXml.abstractXml)).withOutput(new Text("THEIRS gy 2006"), new IntWritable(1)).runTest();
     }
 
     @Test(dataProvider="ownershipYear")

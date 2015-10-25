@@ -1,5 +1,6 @@
 package mbad7090.xml;
 
+import mbad7090.model.Patent;
 import mbad7090.model.PatentAbstract;
 import org.apache.hadoop.io.Text;
 import org.slf4j.Logger;
@@ -21,45 +22,6 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 abstract class XMLMapReduce {
     protected static final Logger log = LoggerFactory.getLogger(PatentAbstractXmlMapReduce.class);
 
-    /**
-     * Read through the given XML and fill in the fields in Patent.
-     * @param value                 Split text containing the XML of one patent
-     * @return                      patent object
-     * @throws XMLStreamException
-     */
-    protected static PatentAbstract readPatentXml(Text value) throws XMLStreamException {
-        String document = value.toString();
-        // System.out.println("'" + document + "'");
-        try {
-            XMLStreamReader reader = XMLInputFactory.newInstance()
-                    .createXMLStreamReader(new ByteArrayInputStream(document.getBytes()));
-            PatentAbstract patent = new PatentAbstract();
-            String currentElement = "";
-            while (reader.hasNext()) {
-                int code = reader.next();
-                switch (code) {
-                    case START_ELEMENT:
-                        currentElement = reader.getLocalName();
-                        if (currentElement.equalsIgnoreCase("abstract")) {
-                            addNested(reader, currentElement, patent);
-                        }
-                        break;
-                    case CHARACTERS:
-                        patent.addField(currentElement, reader.getText());
-                        break;
-                    case END_ELEMENT:
-                        currentElement = reader.getLocalName();
-                        patent.endField(currentElement);
-                }
-            }
-            reader.close();
-            return patent;
-        } catch (Exception e) {
-            log.error("Error parsing xml document: " +  document);
-            log.info("Returning null.");
-            return null;
-        }
-    }
 
     /**
      * Need special processing for the abstract tag, which will have one or more

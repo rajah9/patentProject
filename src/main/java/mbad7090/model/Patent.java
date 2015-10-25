@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * It has a separate way to handle the abstract tag.
  * Created by Rajah on 9/22/2015.
  */
-abstract class Patent {
+public abstract class Patent {
     protected static final Logger log = LoggerFactory.getLogger(Patent.class);
     public static final String[] REMOVELIST = {"\n", "\t"};
     public static final String[] REPLACELIST = {" ", " "};
@@ -177,7 +178,7 @@ abstract class Patent {
      *
      * @param currentElement closing XML tag, like /orgname
      */
-    public void endField(final String currentElement) {
+    public void endElement(final String currentElement) {
         log.debug("Closing currentElement " + currentElement + ".");
         if (currentElement.equalsIgnoreCase("document-id")) {
             isInDocumentId = false;
