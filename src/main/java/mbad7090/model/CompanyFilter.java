@@ -2,8 +2,6 @@ package mbad7090.model;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-
 /**
  * Created by Rajah on 9/25/2015.
  */

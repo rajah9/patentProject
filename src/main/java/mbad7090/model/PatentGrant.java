@@ -105,7 +105,7 @@ public class PatentGrant extends Patent {
         sb.append(getPubDocNumber()).append(delim);
         sb.append(getCompanyName()).append(delim);
         sb.append(getAppDocNumber()).append(delim);
-        sb.append(getCompanyName()).append(delim);
+ //       sb.append(get).append(delim);
         sb.append('"').append(getAssignee()).append('"').append(delim); // surround by quotes so the commas won't become columns
         sb.append(getLengthOfGrant()).append(delim);
         sb.append('"').append(getPatentCitations()).append('"').append(delim);

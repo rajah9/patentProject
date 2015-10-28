@@ -6,9 +6,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.testng.annotations.Test;
-
-import java.io.IOException;
 
 /**
  * Created by Rajah on 9/23/2015.
@@ -23,8 +20,8 @@ public class PatentGrantXmlMapReduceTest {
 
     }
 
-    @Test
-//    @Ignore
+//    @Test
+    @Ignore
     public void testRunJob() throws Exception {
         mapper = new PatentGrantXmlMapReduce.Map();
         driver = new MapDriver<LongWritable, Text, Text, Text>(mapper);
@@ -34,7 +31,7 @@ public class PatentGrantXmlMapReduceTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        int i = 5;
+
     }
 
     private Text generateLongText() {

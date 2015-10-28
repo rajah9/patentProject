@@ -26,7 +26,7 @@ public class SplitFileToJavaString {
     private StringBuffer decls = new StringBuffer();
 
     public void doSplit() {
-        StringBuffer sb = null;
+        StringBuffer sb;
         initOutputFile();
 
         sb = initNewVar();
@@ -45,10 +45,8 @@ public class SplitFileToJavaString {
         } catch (FileNotFoundException e) {
             log.error("Couldn't find file " + fileToOpen + ". Terminating.");
         }
-        scanner.close();
+        if (scanner != null) scanner.close();
         closeOutputFile();
-        return;
-
     }
 
     private void emitVariable(StringBuffer sb) {
