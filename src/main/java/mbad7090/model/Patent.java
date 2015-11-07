@@ -260,7 +260,7 @@ public abstract class Patent {
     public String ownershipYearCode(String fileName) {
         String oursOrTheirs;
         int year;
-        if (CompanyFilter.isTarget(getCompanyName())) {
+        if (CompanyFilter.is3M(getCompanyName())) {
             oursOrTheirs = "OURS";
         } else {
             oursOrTheirs = "THEIRS";
