@@ -1,0 +1,25 @@
+#
+# Invoke CLI with: hive
+# You may have its successor, beeline: beeline -u jdbc:hive2://
+#
+# I am creating a patent_abstract 'table' to read company names.
+# 3M can be poorly spelled and has foreign subsidiaries. Examples:
+#    3M INNOVATIVE PORPERTIES COMPANY
+#    3M ESPE AG (a wholly-owned subsiduary of 3M Company)
+# I am searching for good stems for Siemens, General Electric, Johnson & Johnson, and Dow Chemical.
+#
+CREATE TABLE patent_abstract(patNum BIGINT, company STRING, assignee STRING,
+  granted DATE, applied DATE, patentClass STRING, MainClassification STRING,
+  title STRING, abstract STRING)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION '/user/rchacko1/outputDir';
+
+select count(*) from patent_abstract;
+
+SELECT company, count(*) FROM patent_abstract GROUP BY company ORDER BY 1 ASC;
+
+SELECT company, count(*) FROM patent_abstract where company like '3M%' OR company like 'Siemens%' or company like 'SIEMENS%' GROUP BY company ORDER BY 1 ASC;
+SELECT company, count(*) as PATCNT FROM patent_abstract where company like '3M%' OR company like 'Siemens%' or company like 'SIEMENS%' GROUP BY company ORDER BY PATCNT DESC;
+
+SELECT company, count(*) as PATCNT FROM patent_abstract where company RLIKE '3M |Siemens|SIEMENS|General Electric|GENERAL ELECTRIC|Johnson\&|JOHNSON\&|^Dow |^DOW ' GROUP BY company ORDER BY PATCNT ASC;
