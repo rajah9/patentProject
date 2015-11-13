@@ -23,3 +23,16 @@ SELECT company, count(*) FROM patent_abstract where company like '3M%' OR compan
 SELECT company, count(*) as PATCNT FROM patent_abstract where company like '3M%' OR company like 'Siemens%' or company like 'SIEMENS%' GROUP BY company ORDER BY PATCNT DESC;
 
 SELECT company, count(*) as PATCNT FROM patent_abstract where company RLIKE '3M |Siemens|SIEMENS|General Electric|GENERAL ELECTRIC|Johnson\&|JOHNSON\&|^Dow |^DOW ' GROUP BY company ORDER BY PATCNT ASC;
+
+# Next one gets us the companies Siemens, GE, and 3M. This is the surgery class.
+SELECT distinct company FROM patent_abstract where MainClassification like '%128%' ORDER BY 1 ASC;
+
+# Following gets us quite a few classes
+SELECT MainClassification, count(*) FROM patent_abstract where company like '3M%' group by MainClassification ORDER BY 2 ASC;
+
+# Following just uses first 3 chars.
+SELECT substr(MainClassification,1,3) as class1, count(*) FROM patent_abstract where company like '3M%' group by MainClassification order by 1;
+# Doesn't work... SELECT substr(MainClassification,1,3) as class1, count(*) FROM patent_abstract where company like '3M%' group by class1 ORDER BY 2 ASC;
+
+# here's out to output it to a file from the command line.
+hive -e "SELECT distinct MainClassification FROM patent_abstract where company like '3M%' ;" >/users/rchacko1/Patents/mmmClasses.txt

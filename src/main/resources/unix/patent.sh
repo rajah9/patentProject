@@ -3,7 +3,7 @@ cd Patents
 hadoop fs -mkdir /user/rchacko1/patents
 hadoop fs -put *.xml /user/rchacko1/patents
 hadoop fs -ls /user/rchacko1/patents/*.xml
-hadoop jar batman-1.1.jar mbad7090.xml.PatentAbstractXmlMapReduce /user/rchacko1/patents /user/rchacko1/outputDir
+hadoop jar batman-1.4.jar mbad7090.xml.PatentAbstractXmlMapReduce /user/rchacko1/patents /user/rchacko1/outputDir
 hadoop fs -ls /user/rchacko1/outputDir
 hadoop fs -get /user/rchacko1/outputDir/part-m-0*
 cat part-m-0* >allCompanies.csv
@@ -27,3 +27,9 @@ hadoop fs -mkdir /user/rchacko1/grants
 hadoop fs -put *.xml /user/rchacko1/grants
 hadoop jar batman-1.3.jar mbad7090.xml.PatentGrantXmlMapReduce /user/rchacko1/grants /user/rchacko1/outputDir
 hadoop fs -get /user/rchacko1/outputDir/part-m-0*
+#
+#
+# Getting Patent classes count for 3M
+hadoop jar batman-1.4.jar mbad7090.xml.PatentClassXmlMapReduce /user/rchacko1/patents /user/rchacko1/outputDir
+# This one has a map-reduce, so we get the part-r.
+hadoop fs -get /user/rchacko1/outputDir/part-r-0*

@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,8 +27,9 @@ public abstract class Patent {
     private Integer yearApplied = null;
     private String dateGranted = null;
     private String dateApplied = null;
+    private Integer whenPublished = null;
     private Set<String> patentClass = new HashSet<String>();
-    private String mainClassification = "";
+    private List<String> mainClassification = new ArrayList<String>();
     private String patentNumber = "";
     private String patentTitle = "";
     private boolean isInDocumentId = false;
@@ -71,6 +74,11 @@ public abstract class Patent {
         }
     }
 
+    public Integer getWhenPublished() {
+        if (null != whenPublished) { return whenPublished; }
+        return 0;
+    }
+
     /**
      * Return the patent class as a list of strings.
      * @return  String, with elements separated by commas.
@@ -100,7 +108,7 @@ public abstract class Patent {
     public void setYearGranted(Integer yearGranted) { this.yearGranted = yearGranted; }
 
     public String getMainClassification() {
-        return mainClassification;
+        return StringUtils.join(mainClassification.iterator(), "|");
     }
 
     /**
@@ -141,11 +149,15 @@ public abstract class Patent {
             log.debug("Patent class has " + patentClass.size() + " elements.");
         } else if (currentElement.equalsIgnoreCase("main-classification")) {
             if (StringUtils.isNotBlank(value)) {
-                mainClassification += StringUtils.trim(value) + " ";
+                mainClassification.add(StringUtils.trim(value));
             }
             log.debug("Main classification is " + mainClassification);
         } else if (currentElement.equalsIgnoreCase("doc-number")) {
             patentNumber += value;
+            if (StringUtils.startsWith(patentNumber,"20")) {
+                // patent number starts with a publish date, like 2012029
+                whenPublished = Integer.getInteger(StringUtils.substring(patentNumber, 0, 4));
+            }
             log.debug("Made doc number " + patentNumber);
         } else if (currentElement.equalsIgnoreCase("last-name")) {
             if (StringUtils.isNotBlank(value)) {
@@ -193,7 +205,6 @@ public abstract class Patent {
         companyName = cleanAndTrim(companyName);
         assignee = cleanAndTrim(assignee);
         patentTitle = cleanAndTrim(patentTitle);
-        mainClassification = cleanAndTrim(mainClassification);
     }
 
     protected String cleanAndTrim(String cleanMe) {
@@ -217,6 +228,7 @@ public abstract class Patent {
             sb.append(getDateGranted()).append(delim);
             sb.append(getDateApplied()).append(delim);
         }
+        sb.append(getWhenPublished()).append(delim);
         sb.append(getPatentClass()).append(delim);
         sb.append(getMainClassification()).append(delim);
         sb.append(getPatentTitle()).append(delim);

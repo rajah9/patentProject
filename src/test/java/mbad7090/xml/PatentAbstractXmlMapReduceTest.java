@@ -6,6 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Created by Rajah on 9/23/2015.
