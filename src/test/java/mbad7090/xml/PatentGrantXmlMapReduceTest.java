@@ -15,16 +15,12 @@ public class PatentGrantXmlMapReduceTest {
     private Mapper<LongWritable, Text, Text, Text> mapper;
     private MapDriver<LongWritable, Text, Text, Text> driver;
 
-    @Before
-    public void setUp() throws Exception {
-
-    }
 
 //    @Test
     @Ignore
     public void testRunJob() throws Exception {
         mapper = new PatentGrantXmlMapReduce.Map();
-        driver = new MapDriver<LongWritable, Text, Text, Text>(mapper);
+        driver = new MapDriver<>(mapper);
         Text grantXml = generateLongText();
         try {
             driver.withInput(new LongWritable(1L), grantXml).withOutput(new Text("foo"), new Text("bar")).runTest();

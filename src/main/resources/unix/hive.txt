@@ -8,8 +8,10 @@
 #    3M ESPE AG (a wholly-owned subsiduary of 3M Company)
 # I am searching for good stems for Siemens, General Electric, Johnson & Johnson, and Dow Chemical.
 #
+DROP TABLE patent_abstract;
+#
 CREATE TABLE patent_abstract(patNum BIGINT, company STRING, assignee STRING,
-  granted DATE, applied DATE, patentClass STRING, MainClassification STRING,
+  granted DATE, applied DATE, published STRING, patentClass STRING, MainClassification STRING,
   title STRING, abstract STRING)
 ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n'
 STORED AS TEXTFILE
@@ -21,6 +23,16 @@ SELECT company, count(*) FROM patent_abstract GROUP BY company ORDER BY 1 ASC;
 
 SELECT company, count(*) FROM patent_abstract where company like '3M%' OR company like 'Siemens%' or company like 'SIEMENS%' GROUP BY company ORDER BY 1 ASC;
 SELECT company, count(*) as PATCNT FROM patent_abstract where company like '3M%' OR company like 'Siemens%' or company like 'SIEMENS%' GROUP BY company ORDER BY PATCNT DESC;
+
+#
+# how to find DuPont
+SELECT company, count(*) FROM patent_abstract where company like 'Du%' or company like 'DU%' GROUP BY company ORDER BY 1 ASC;
+# How to find Abbott
+SELECT company, count(*) FROM patent_abstract where company like 'Abbott%' or company like 'ABBOTT%' GROUP BY company ORDER BY 1 ASC;
+# How to find blackberry
+SELECT company, count(*) FROM patent_abstract where company like 'Black%' or company like 'BLACKB%' GROUP BY company ORDER BY 1 ASC;
+# We put in Ford as a red herring.
+SELECT company, count(*) FROM patent_abstract where company like 'Ford %' or company like 'FORD %' GROUP BY company ORDER BY 1 ASC;
 
 SELECT company, count(*) as PATCNT FROM patent_abstract where company RLIKE '3M |Siemens|SIEMENS|General Electric|GENERAL ELECTRIC|Johnson\&|JOHNSON\&|^Dow |^DOW ' GROUP BY company ORDER BY PATCNT ASC;
 
@@ -36,3 +48,9 @@ SELECT substr(MainClassification,1,3) as class1, count(*) FROM patent_abstract w
 
 # here's out to output it to a file from the command line.
 hive -e "SELECT distinct MainClassification FROM patent_abstract where company like '3M%' ;" >/users/rchacko1/Patents/mmmClasses.txt
+
+# Did we get Bostik and Blackberry?
+SELECT company, abstract FROM patent_abstract where company like 'Bostik%' or company like 'BOSTIK%' or company like 'Blackberry%' or company like 'BLACKBERRY%' ORDER BY 1 ASC;
+
+# Check out when published.
+SELECT distinct published FROM patent_abstract where published > 0 ORDER BY 1 ASC;

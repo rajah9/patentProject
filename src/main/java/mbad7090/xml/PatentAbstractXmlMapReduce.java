@@ -53,8 +53,8 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
                 boolean willDisregard = !CompanyFilter.isTarget(patent.getCompanyName()); // or set to false to never disregard
                 patent.cleanFields(willDisregard);
 
-//                if (!willDisregard)  // comment this out to write all companies. Leave to just write screened companies (3M, Honeywell, GE...)
-                if (CompanyFilter.is3M(patent.getCompanyName())) // comment this out to write all companies. Leave to just write 3M
+                if (!willDisregard)  // comment this out to write all companies. Leave to just write screened companies (3M, Honeywell, GE...)
+//                if (CompanyFilter.is3M(patent.getCompanyName())) // comment this out to write all companies. Leave to just write 3M
                     mapWrite(context, patent);
 
 
@@ -123,10 +123,7 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
     }
 
     public static void runJob(String input, String output) throws Exception {
-        Configuration conf = new Configuration();
-        conf.set("key.value.separator.in.input.line", " ");
-        conf.set("xmlinput.start", "<us-patent-application");
-        conf.set("xmlinput.end", "</us-patent-application>");
+        Configuration conf = getConfiguration();
 
         Job job = new Job(conf);
         job.setJarByClass(PatentAbstractXmlMapReduce.class);
@@ -143,6 +140,14 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
         outPath.getFileSystem(conf).delete(outPath, true);
 
         job.waitForCompletion(true);
+    }
+
+    protected static Configuration getConfiguration() {
+        Configuration conf = new Configuration();
+        conf.set("key.value.separator.in.input.line", " ");
+        conf.set("xmlinput.start", "<us-patent-application");
+        conf.set("xmlinput.end", "</us-patent-application>");
+        return conf;
     }
 
     public static void main(String... args) throws Exception {

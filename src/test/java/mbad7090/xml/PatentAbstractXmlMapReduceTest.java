@@ -19,7 +19,7 @@ public class PatentAbstractXmlMapReduceTest {
     @Before
     public void setUp() throws Exception {
         mapper = new PatentAbstractXmlMapReduce.Map();
-        driver = new MapDriver<LongWritable, Text, Text, Text>(mapper);
+        driver = new MapDriver<>(mapper);
     }
 
 //        @Test

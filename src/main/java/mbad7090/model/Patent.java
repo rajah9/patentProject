@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Patent handles the desired patent fields.
  * It has a separate way to handle the abstract tag.
@@ -28,8 +30,8 @@ public abstract class Patent {
     private String dateGranted = null;
     private String dateApplied = null;
     private Integer whenPublished = null;
-    private Set<String> patentClass = new HashSet<String>();
-    private List<String> mainClassification = new ArrayList<String>();
+    private Set<String> patentClass = new HashSet<>();
+    private List<String> mainClassification = new ArrayList<>();
     private String patentNumber = "";
     private String patentTitle = "";
     private boolean isInDocumentId = false;
@@ -156,7 +158,8 @@ public abstract class Patent {
             patentNumber += value;
             if (StringUtils.startsWith(patentNumber,"20")) {
                 // patent number starts with a publish date, like 2012029
-                whenPublished = Integer.getInteger(StringUtils.substring(patentNumber, 0, 4));
+                // TODO: Make sure the following works correctly.
+                whenPublished = parseInt(patentNumber.substring(0, 4));
             }
             log.debug("Made doc number " + patentNumber);
         } else if (currentElement.equalsIgnoreCase("last-name")) {
@@ -252,7 +255,7 @@ public abstract class Patent {
         if (value.length() < 4) {
             throw new NumberFormatException("Cannot get yyyy from string of length " + value.length());
         }
-        return Integer.parseInt(value.substring(0, 4));
+        return parseInt(value.substring(0, 4));
     }
 
     protected void getAttribs(XMLStreamReader reader) {
@@ -286,7 +289,7 @@ public abstract class Patent {
             String yy = StringUtils.substring(fileName, 3, 5);
             int yr;
             try {
-                yr = Integer.parseInt(yy);
+                yr = parseInt(yy);
             } catch (NumberFormatException e) {
                 yr = 0;
             }

@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by Rajah on 10/20/2015.
  */
 public class PatentGrant extends Patent {
-    private Set<String> patentCitations = new HashSet<String>();
+    private Set<String> patentCitations = new HashSet<>();
     private Integer lengthOfGrant = null;
     private boolean isInPublicationReference = false;
     private boolean isInApplicationReference = false;
