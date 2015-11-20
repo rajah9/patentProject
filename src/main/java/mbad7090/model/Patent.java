@@ -22,6 +22,7 @@ public abstract class Patent {
     public static final String[] REMOVELIST = {"\n", "\t"};
     public static final String[] REPLACELIST = {" ", " "};
     private static final boolean USEYEARS = false;
+    public static final int _CLASSLEN = 3;
     protected char delim = '\t';
     private String companyName = "";
     private String assignee = "";
@@ -151,7 +152,7 @@ public abstract class Patent {
             log.debug("Patent class has " + patentClass.size() + " elements.");
         } else if (currentElement.equalsIgnoreCase("main-classification")) {
             if (StringUtils.isNotBlank(value)) {
-                mainClassification.add(StringUtils.trim(value));
+                mainClassification.addAll(parseMainClassification(value));
             }
             log.debug("Main classification is " + mainClassification);
         } else if (currentElement.equalsIgnoreCase("doc-number")) {
@@ -182,6 +183,48 @@ public abstract class Patent {
             isInApplicationReference = true;
             log.debug("Inside application reference.");
         }
+    }
+
+    /**
+     * Takes a main classification like " 123 20" and returns a List of triplets, padded with 0s, like "123 020"
+     *
+     * @param value     Main classification string, like " 123 20 "
+     * @return          List of strings, 3 chars long.
+     */
+    static public List<String> parseMainClassification(String value) {
+        List<String> ans = new ArrayList<>();
+        String[] classifications = StringUtils.split(value);
+
+        for (String classification : classifications) {
+            ans.addAll(parseClassification(classification));
+        }
+        return ans;
+    }
+    /**
+     * Takes a main classification like "20" and returns a List of triplets, padded with 0s, like "020"
+     *
+     * @param value
+     * @return
+     */
+
+    static public List<String> parseClassification(String value) {
+        List<String> ans = new ArrayList<>();
+        StringBuffer parseMe = new StringBuffer(15);
+        int currentLen = StringUtils.trim(value).length();
+        // Make a sb of 0s that make the desired buffer length become a multiple of 3.
+        // If currentLen is 7, make it 9. If it's 1, make it 3.
+        while (currentLen % _CLASSLEN > 0) {
+            parseMe.append('0');
+            currentLen++;
+        }
+
+        parseMe.append(StringUtils.trim(value));  // turns a 20 into a 020.
+
+        for (int i = 0; i < parseMe.length() - _CLASSLEN + 1; i += _CLASSLEN) {
+            ans.add(parseMe.substring(i, i + _CLASSLEN).toString());
+        }
+
+        return ans;
     }
 
     /**

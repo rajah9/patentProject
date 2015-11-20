@@ -26,7 +26,7 @@ public class CompanyFilter {
     static final private String _FORD_STEM1 = "FORD GLOBAL";
     static final private String _FORD_STEM2 = "FORD MOTOR";
 
-    static private String[] matchingCompanies = { _OURSTEM, _SIEMENS_STEM, _GE_STEM, _J_N_J_STEM, _DOW_STEM, _HONEYWELL_STEM, _DUPONT_STEM1, _DUPONT_STEM2, _BOSTIK_STEM, _BLACKBERRY_STEM, _FORD_STEM1, _FORD_STEM2 };
+    static private String[] matchingCompanies = { _OURSTEM, _SIEMENS_STEM, _GE_STEM, _J_N_J_STEM, _DOW_STEM, _HONEYWELL_STEM, _DUPONT_STEM1, _DUPONT_STEM2, _BOSTIK_STEM, _ABBOTT_STEM, _BLACKBERRY_STEM, _FORD_STEM1, _FORD_STEM2 };
 
     static private String[] ourCompanies = {_OURSTEM};
     /**

@@ -51,9 +51,10 @@ public class PatentAbstractXmlMapReduce extends XMLMapReduce {
                 PatentAbstract patent = readPatentXml(value);
 
                 boolean willDisregard = !CompanyFilter.isTarget(patent.getCompanyName()); // or set to false to never disregard
+                willDisregard = false;
                 patent.cleanFields(willDisregard);
 
-                if (!willDisregard)  // comment this out to write all companies. Leave to just write screened companies (3M, Honeywell, GE...)
+//                if (!willDisregard)  // comment this out to write all companies. Leave to just write screened companies (3M, Honeywell, GE...)
 //                if (CompanyFilter.is3M(patent.getCompanyName())) // comment this out to write all companies. Leave to just write 3M
                     mapWrite(context, patent);
 

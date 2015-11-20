@@ -54,3 +54,9 @@ SELECT company, abstract FROM patent_abstract where company like 'Bostik%' or co
 
 # Check out when published.
 SELECT distinct published FROM patent_abstract where published > 0 ORDER BY 1 ASC;
+
+# What kinds of companies have main classes of 428?
+select distinct mainClassification from patent_abstract where mainClassification like '%428%';
+
+# Pull everything with a main class of 428.
+hive -e "SELECT *, count(*) as PATCNT from patent_abstract where mainClassification like '%428%' GROUP BY PATCNT order by PATCNT ASC; " >/users/rchacko1/Patents/class428.txt
