@@ -81,7 +81,7 @@ public class SplitFileToJavaString {
 
     private void closeOutputFile() {
         try {
-            out.write("Just Java declaractions:\n");
+            out.write("Just Java declarations:\n");
             out.write(decls.toString());
             out.close();
         } catch (IOException e) {

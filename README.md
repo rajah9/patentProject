@@ -28,4 +28,13 @@ cat part-m-0* >allCompanies.csv
 hadoop fs -rm -R /user/rchacko1/outputDir
 # remove the partial files on my local disk.
 rm part-m-0*
-
+#
+# Adding version 1.5 that will create a map reduce of assignees (how many patents each assignee contributed to)
+#
+# How to use:
+# Getting counts of all assignees with the main classification of Stock Materials. (not working!)
+#
+hadoop jar batman-1.5.jar mbad7090.xml.AssigneeCountMapReduce /user/rchacko1/patents /user/rchacko1/assigneeDir
+#
+# Used hive to get all of the Stock Materials classes
+hive -e "SELECT company, assignee from patent_abstract where mainClassification like '%428%'; " >/users/rchacko1/Patents/assignees.txt

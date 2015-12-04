@@ -23,6 +23,8 @@ public abstract class Patent {
     public static final String[] REPLACELIST = {" ", " "};
     private static final boolean USEYEARS = false;
     public static final int _CLASSLEN = 3;
+    public static final String _CLASS_SEPARATOR = "|";
+    public static final String _ASSIGNEE_SEPARATOR = "|";
     protected char delim = '\t';
     private String companyName = "";
     private String assignee = "";
@@ -90,12 +92,26 @@ public abstract class Patent {
         return StringUtils.join(patentClass.iterator(), ", ");
     }
 
+
     public String getAssignee() {
         if (assignee.length() > 0) {
             return StringUtils.trim(assignee);
         } else {
             return companyName;
         }
+    }
+
+    public String[] getAssigneesAsArray() {
+        return StringUtils.split(assignee, _ASSIGNEE_SEPARATOR);
+    }
+
+    /**
+     * Add the assignee to the given list.
+     * @param assignee  Should be of the form Last@First.
+     *
+     */
+    public void addAssignee(final String myAssignee) {
+        assignee += myAssignee + _ASSIGNEE_SEPARATOR;
     }
 
     public String getPatentNumber() {
@@ -111,9 +127,16 @@ public abstract class Patent {
     public void setYearGranted(Integer yearGranted) { this.yearGranted = yearGranted; }
 
     public String getMainClassification() {
-        return StringUtils.join(mainClassification.iterator(), "|");
+        return StringUtils.join(mainClassification.iterator(), _CLASS_SEPARATOR);
     }
 
+    public boolean containsMainClassification(final String findMe) {
+        return StringUtils.contains(getMainClassification(), findMe);
+    }
+
+    void addMainClassification(String addThisClass) {
+        mainClassification.add(addThisClass);
+    }
     /**
      * If appropriate, add the field to the Patent.
      *
@@ -170,7 +193,7 @@ public abstract class Patent {
             }
         } else if (currentElement.equalsIgnoreCase("first-name")) {
             if (StringUtils.isNotBlank(value)) {
-                assignee += value + "|";
+                assignee += value + _ASSIGNEE_SEPARATOR;
                 log.debug("Made assignee " + assignee);
             }
         } else if (currentElement.equalsIgnoreCase("invention-title")) {

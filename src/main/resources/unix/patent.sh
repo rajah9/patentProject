@@ -33,3 +33,9 @@ hadoop fs -get /user/rchacko1/outputDir/part-m-0*
 hadoop jar batman-1.4.jar mbad7090.xml.PatentClassXmlMapReduce /user/rchacko1/patents /user/rchacko1/outputDir
 # This one has a map-reduce, so we get the part-r.
 hadoop fs -get /user/rchacko1/outputDir/part-r-0*
+#
+# Getting counts of all assignees with the main classification of Stock Materials.
+#
+hadoop jar batman-1.5.jar mbad7090.xml.AssigneeCountMapReduce /user/rchacko1/patents /user/rchacko1/assigneeDir
+hadoop fs -ls /user/rchacko1/assigneeDir
+hadoop fs -get /user/rchacko1/assigneeDir/part-r-0*
