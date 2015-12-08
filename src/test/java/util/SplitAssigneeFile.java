@@ -42,7 +42,7 @@ public class SplitAssigneeFile {
     public void doParse() {
         int lineCount = 0;
         String company;
-        int assigneeIndex = 0;
+        int assigneeIndex;
         Scanner scanner = null;
         try {
             scanner = new Scanner(new FileInputStream(fileToOpen));
@@ -111,7 +111,7 @@ public class SplitAssigneeFile {
      * Inner class to represent the {Company, Assignee} pair.
      */
     private class AssigneeRow {
-        public static final int _COMPANY_STEM_LEN = 10;  // only use this many chars for the Company name.
+        public static final int _COMPANY_STEM_LEN = 22;  // only use this many chars for the Company name.
         private String company;
         private String assignee;
 

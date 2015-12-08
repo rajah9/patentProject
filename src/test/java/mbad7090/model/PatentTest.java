@@ -1,6 +1,14 @@
 package mbad7090.model;
 
 
+import mbad7090.xml.PatentAbstractXmlMapReduce;
+import mbad7090.xml.TestXml;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mrunit.mapreduce.MapDriver;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -10,6 +18,14 @@ import static org.junit.Assert.assertTrue;
  * Created by Rajah on 11/28/2015.
  */
 public class PatentTest {
+    private Mapper<LongWritable, Text, Text, Text> mapper;
+    private MapDriver<LongWritable, Text, Text, Text> driver;
+
+    @Before
+    public void setUp() throws Exception {
+        mapper = new PatentAbstractXmlMapReduce.Map();
+        driver = new MapDriver<>(mapper);
+    }
 
     @Test
     public void testContainsMainClassification() throws Exception {
@@ -37,5 +53,11 @@ public class PatentTest {
         assertTrue(dualResult.length == 2);
         assertTrue(dualResult[0].equalsIgnoreCase(name1));
         assertTrue(dualResult[1].equalsIgnoreCase(name2));
+    }
+
+            @Test
+//    @Ignore
+    public void testRunJob() throws Exception {
+        driver.withInput(new LongWritable(1L), new Text(TestXml.abstractXml)).withOutput(new Text("foo"), new Text("bar")).runTest();
     }
 }

@@ -4,7 +4,7 @@ package mbad7090.xml;
  * Created by Rajah on 10/4/2015.
  */
 public class TestXml {
-    static final String abstractXml =
+    public static final String abstractXml =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!DOCTYPE us-patent-application SYSTEM \"us-patent-application-v42-2006-08-23.dtd\" [ ]>\n" +
             "<us-patent-application lang=\"EN\" dtd-version=\"v4.2 2006-08-23\" file=\"US20100281592A1-20101111.XML\" status=\"PRODUCTION\" id=\"us-patent-application\" country=\"US\" date-produced=\"20101027\" date-publ=\"20101111\">\n" +
@@ -100,7 +100,7 @@ public class TestXml {
             "<applicant sequence=\"00\" app-type=\"applicant-inventor\" designation=\"us-only\">\n" +
             "<addressbook>\n" +
             "<last-name>LEE</last-name>\n" +
-            "<first-name>HENRY TAE JOON</first-name>\n" +
+            "<first-name>HENRY Bj&#xf8;rn</first-name>\n" +
             "<address>\n" +
             "<city>Los Angeles</city>\n" +
             "<state>CA</state>\n" +

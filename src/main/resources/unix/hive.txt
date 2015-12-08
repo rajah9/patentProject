@@ -67,3 +67,6 @@ hive -e "SELECT * from patent_abstract where mainClassification like '%427%'; " 
 
 # Pull assignees and companies with a main class of 428. 
 hive -e "SELECT company, assignee from patent_abstract where mainClassification like '%428%'; " >/users/rchacko1/Patents/assignees.txt
+
+# Got funny characters like Ã
+hive -e "SELECT patNum, company, assignee from patent_abstract where assignee like '%Ã%'; " >/users/rchacko1/Patents/funnyA.txt

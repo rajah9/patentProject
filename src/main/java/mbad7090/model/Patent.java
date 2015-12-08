@@ -25,6 +25,7 @@ public abstract class Patent {
     public static final int _CLASSLEN = 3;
     public static final String _CLASS_SEPARATOR = "|";
     public static final String _ASSIGNEE_SEPARATOR = "|";
+    public static final String _FN_LN_SEPARATOR = "@";
     protected char delim = '\t';
     private String companyName = "";
     private String assignee = "";
@@ -68,7 +69,6 @@ public abstract class Patent {
         } else {
             return "";
         }
-
     }
 
     public String getDateApplied() {
@@ -107,7 +107,7 @@ public abstract class Patent {
 
     /**
      * Add the assignee to the given list.
-     * @param assignee  Should be of the form Last@First.
+     * @param myAssignee  Should be of the form Last@First.
      *
      */
     public void addAssignee(final String myAssignee) {
@@ -188,11 +188,13 @@ public abstract class Patent {
             log.debug("Made doc number " + patentNumber);
         } else if (currentElement.equalsIgnoreCase("last-name")) {
             if (StringUtils.isNotBlank(value)) {
-                assignee += value + "@";
+                assignee = StringUtils.chomp(assignee, _FN_LN_SEPARATOR); // take off final Separator, if it exists.
+                assignee += value + _FN_LN_SEPARATOR;
                 log.debug("Made assignee " + assignee);
             }
         } else if (currentElement.equalsIgnoreCase("first-name")) {
             if (StringUtils.isNotBlank(value)) {
+                assignee = StringUtils.chomp(assignee, _ASSIGNEE_SEPARATOR); // take off final Separator, if it exists.
                 assignee += value + _ASSIGNEE_SEPARATOR;
                 log.debug("Made assignee " + assignee);
             }
@@ -226,8 +228,8 @@ public abstract class Patent {
     /**
      * Takes a main classification like "20" and returns a List of triplets, padded with 0s, like "020"
      *
-     * @param value
-     * @return
+     * @param value, like 2 20
+     * @return  a List<String>, padded to 3 chars, like 002 020.
      */
 
     static public List<String> parseClassification(String value) {
@@ -244,7 +246,7 @@ public abstract class Patent {
         parseMe.append(StringUtils.trim(value));  // turns a 20 into a 020.
 
         for (int i = 0; i < parseMe.length() - _CLASSLEN + 1; i += _CLASSLEN) {
-            ans.add(parseMe.substring(i, i + _CLASSLEN).toString());
+            ans.add(parseMe.substring(i, i + _CLASSLEN));
         }
 
         return ans;
